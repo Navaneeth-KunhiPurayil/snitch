@@ -6,7 +6,7 @@ int main()
 	int b = 1;
 
 	int c = a+b; 
-    printf("%d:",c);
+    printf("Result: %d\n",c);
 
 	return 0;
 }
