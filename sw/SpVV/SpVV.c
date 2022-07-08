@@ -122,14 +122,12 @@ int main()
     snrt_cluster_hw_barrier();
     printf_("coordinate: %u res_act:%u\n",t2-t1,res_act);
 
-    
     snrt_cluster_hw_barrier();
     t1 = benchmark_get_cycle();
     res_act = spVV_rle();
     t2 = benchmark_get_cycle();
     snrt_cluster_hw_barrier();
     printf_("run length encoding: %u res_act:%u\n",t2-t1,res_act);
-    
     
     snrt_cluster_hw_barrier();
     t1 = benchmark_get_cycle();
