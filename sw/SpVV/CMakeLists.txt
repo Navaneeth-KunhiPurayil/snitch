@@ -16,9 +16,6 @@ include_directories(include)
 include_directories(${SNRUNTIME_INCLUDE_DIRS})
 
 add_snitch_executable(SpVV SpVV.c)
+add_snitch_executable(SpVSpV SpVSpV.c)
 
-#target_link_libraries(SpVV SpVV ${SNITCH_RUNTIME})
-
-# Tests
-enable_testing()
-add_snitch_raw_test_rtl(SpVV SpVV)
+target_link_libraries(SpVV ${SNITCH_RUNTIME})
