@@ -82,7 +82,7 @@ int32_t spVspV_baseline() {
 }
 
 int32_t spVspV_coordinate() {
-    int32_t c=0;
+    int32_t c=0, val1, val2;
 
     uint32_t idx_a=0,idx_b=1;
     uint32_t count_a=0, count_b=0, j_a = 0, j_b = 0;
@@ -90,177 +90,215 @@ int32_t spVspV_coordinate() {
     int32_t  coo_val_b = *ptr_coo_b;   
     uint32_t index_a = 0, index_b = 0;
 
-    
-    /*while( (index_a < 4*nz_len) && (index_b < 4*nz_len)) {
-    	idx_a = coo_val_a & mask_coo_a; 
-    	idx_b = coo_val_b & mask_coo_b;
-    	while ((idx_a != idx_b) && (index_a < 4*nz_len) && (index_b < 4*nz_len)) {
-    	    idx_a = coo_val_a & mask_coo_a; 
-    	    idx_b = coo_val_b & mask_coo_b;
-    	    if (idx_a < idx_b) {
-          	    index_a += 4;
-        	    if (count_a == (n_coo_a - 1)) {
-        		    j_a += 4;
-        		    coo_val_a = ptr_coo_a[j_a/4];
-        		    count_a = 0;
-        	    } else {
-        	        coo_val_a = coo_val_a >> b_coo_a;
-        	        count_a++;
-        	    }
+    //printf("n_coo:%d\n",n_coo_a);
 
-            } else {
-          	    index_b += 4;
-        	    if (count_b == (n_coo_b - 1)) {
-        		    j_b += 4;
-        		    coo_val_b = ptr_coo_b[j_b/4];
-        		    count_b = 0;
-        	    } else {
-        	        coo_val_b = coo_val_b >> b_coo_b;
-        	        count_b++;
-        	    }
-            }
-        }
-        //printf("idx_a:%d idx_b:%d idx_nz_a:%d idx_nz_b:%d\n", idx_a, idx_b, index_a/4, index_b/4);
-        printf("idx_a:%d idx_b:%d idx_nz_a:%d idx_nz_b:%d a:%d b:%d c:%d\n", idx_a, idx_b, index_a/4, index_b/4, ptr_nz_a[index_a/4], ptr_nz_b[index_b/4], c);
-        c += ptr_nz_a[index_a/4] * ptr_nz_b[index_b/4];
-        index_a += 4; 
-        index_b += 4;
-        idx_b--;
-    }*/
-    /*
-    while( (index_a < 4*nz_len) && (index_b < 4*nz_len)) {
-    	idx_a = coo_val_a & mask_coo_a; 
-    	idx_b = coo_val_b & mask_coo_b;
-    	printf("idx_a_new:%d idx_new_b:%d\n", idx_a, idx_b);
-    	do {
-    	while ((idx_a < idx_b) && (index_a < 4*nz_len) ) {
-    	        idx_a = coo_val_a & mask_coo_a; 
-          	    index_a += 4;
-        	    if (count_a == (n_coo_a - 1)) {
-        		    j_a += 4;
-        		    coo_val_a = ptr_coo_a[j_a/4];
-        		    count_a = 0;
-        	    } else {
-        	        // Go to next idx a
-        	        coo_val_a = coo_val_a >> b_coo_a;
-        	        count_a++;
-        	    }
-        	    
-        }
-        while ((idx_a > idx_b) && (index_b < 4*nz_len) ) {
-        	    idx_b = coo_val_b & mask_coo_b;
-          	    index_b += 4;
-        	    if (count_b == (n_coo_b - 1)) {
-        		    j_b += 4;
-        		    coo_val_b = ptr_coo_b[j_b/4];
-        		    count_b = 0;
-        	    } else {
-        	        // Go to next idx a
-        	        coo_val_b = coo_val_b >> b_coo_b;
-        	        count_b++;
-        	    }
-        	    
-        }
-    }
-        while( (idx_a != idx_b) && (index_a < 4*nz_len) && (index_b < 4*nz_len));
-
-        //printf("idx_a:%d idx_b:%d idx_nz_a:%d idx_nz_b:%d\n", idx_a, idx_b, index_a/4, index_b/4);
-        printf("idx_a:%d idx_b:%d idx_nz_a:%d idx_nz_b:%d a:%d b:%d c:%d\n", idx_a, idx_b, index_a/4, index_b/4, ptr_nz_a[index_a/4], ptr_nz_b[index_b/4], c);
-        c += ptr_nz_a[index_a/4] * ptr_nz_b[index_b/4];
-        index_a += 4; 
-        index_b += 4;
-        idx_b--;
-    }*/
-
-    
     idx_a = coo_val_a & mask_coo_a; 
     idx_b = coo_val_b & mask_coo_b;
 
-    while( (index_a < 4*nz_len) && (index_b < 4*nz_len)) {
-    	    if (idx_a < idx_b) {
-        	    index_a +=4; 
-        	    if (index_a % (n_coo_a*4) == 0) {
-        	    	coo_val_a = ptr_coo_a[index_a/(n_coo_a*4)];
-        	    } else {
-        	    	coo_val_a = coo_val_a >> b_coo_a;
-        	    }
-        	    idx_a = coo_val_a & mask_coo_a; 
+    uint32_t * ptr_idx_a = ptr_coo_a, *ptr_idx_b = ptr_coo_b;
 
-            } else if (idx_a > idx_b) {
-          	    index_b += 4;
-        	    if (index_b % (n_coo_b*4) == 0) {
-        	    	coo_val_b = ptr_coo_b[index_b/(n_coo_b*4)];
-        	    } else {
-        	    	coo_val_b = coo_val_b >> b_coo_b;
-        	    }
-        	    idx_b = coo_val_b & mask_coo_b;
-            } else {
-            	c += ptr_nz_a[index_a/4] * ptr_nz_b[index_b/4];
-            	//printf("idx_a:%d idx_b:%d idx_nz_a:%d idx_nz_b:%d a:%d b:%d c:%d\n", idx_a, idx_b, index_a/4, index_b/4, ptr_nz_a[index_a/4], ptr_nz_b[index_b/4], c);
-            	index_a += 4;
-            	index_b += 4;
-        	    if (index_a % (n_coo_a*4) == 0) {
-        	    	coo_val_a = ptr_coo_a[index_a/(n_coo_a*4)];
-        	    } else {
-        	    	coo_val_a = coo_val_a >> b_coo_a;
-        	    }
-        	    if (index_b % (n_coo_b*4) == 0) {
-        	    	coo_val_b = ptr_coo_b[index_b/(n_coo_b*4)];
-        	    } else {
-        	    	coo_val_b = coo_val_b >> b_coo_b;
-        	    }
-        	    idx_a = coo_val_a & mask_coo_a; 
-        	    idx_b = coo_val_b & mask_coo_b;
-            }     
+    while(1) {
+        do {
+            while(idx_a < idx_b) {
+                
+                coo_val_a = coo_val_a >> b_coo_a;
+                index_a += 4; 
+                if (coo_val_a == 0) {
+                    coo_val_a = *(++ptr_idx_a);
+                    if (index_a >= 4*nz_len)
+                        return c;
+                }
+                idx_a = coo_val_a & mask_coo_a; 
+            }
+            while (idx_a > idx_b) {
+                
+                coo_val_b = coo_val_b >> b_coo_b;
+                index_b += 4;
+                if (coo_val_b == 0) {
+                    coo_val_b = *(++ptr_idx_b);
+                    if (index_b >= 4*nz_len)
+                        return c;
+                }
+                idx_b = coo_val_b & mask_coo_b;
+            } 
+        } 
+        while ((idx_a != idx_b));
+
+
+                val1 = ptr_nz_a[index_a/4]; 
+                index_a +=4;
+                coo_val_a = coo_val_a >> b_coo_a;
+
+                val2 = ptr_nz_b[index_b/4];
+                index_b +=4;
+                coo_val_b = coo_val_b >> b_coo_b;
+                
+                c += val1 * val2;
+
+                if (coo_val_a == 0) {
+                    coo_val_a = *(++ptr_idx_a);
+                    if ((index_a >= nz_len*4) )
+                        return c;
+                }
+                idx_a = coo_val_a & mask_coo_a;
+                
+                if (coo_val_b == 0) {
+                    coo_val_b = *(++ptr_idx_b);
+                    if ((index_b >= nz_len*4))
+                        return c;
+                }
+                idx_b = coo_val_b & mask_coo_b;
+
+                //printf("idx_a:%d idx_b:%d idx_nz_a:%d idx_nz_b:%d a:%d b:%d c:%d\n", idx_a, idx_b, index_a/4, index_b/4, ptr_nz_a[index_a/4], ptr_nz_b[index_b/4], c);
+
+                
     }
 
     return c;
 
 }
 
+int32_t spVspV_rle() {
+    int32_t c=0, val1, val2;
+
+    uint32_t run_a = 0, run_b = 0, acc_a = 0, acc_b = 0; 
+    //uint32_t count_a=0, count_b=0, j_a = 0, j_b = 0;
+    int32_t  rle_val_a = *ptr_rle_a;
+    int32_t  rle_val_b = *ptr_rle_b;   
+    uint32_t index_a = 0, index_b = 0;
+
+    run_a = rle_val_a & mask_rle_a; 
+    run_b = rle_val_b & mask_rle_b;
+    acc_a = run_a;
+    acc_b = run_b;
+
+    uint32_t * ptr_idx_a = ptr_rle_a, *ptr_idx_b = ptr_rle_b;
+    
+    while(1) {
+
+        do {
+            while (acc_a < acc_b) {
+                index_a += 4;
+                if (index_a >= 4*rle_len_a)
+                    return c;
+                if ((index_a % (4*n_rle_a)) == 0) {                   
+                    rle_val_a = *(++ptr_idx_a);
+                } else {
+                    rle_val_a = rle_val_a >> b_rle_a;
+                }
+                 
+                run_a = rle_val_a & mask_rle_a; 
+                acc_a += (run_a + 1); 
+                //printf("run_a:%u   idx_a:%u idx_b:%u acc_a:%u acc_b:%u\n ", run_a, index_a, index_b, acc_a, acc_b);
+            }
+
+            while (acc_a > acc_b) {
+                index_b += 4;
+                if (index_b >= 4*rle_len_b)
+                        return c;
+                if ((index_b % (4*n_rle_b)) == 0) {
+                    rle_val_b = *(++ptr_idx_b);
+                } else {
+                    rle_val_b = rle_val_b >> b_rle_b;
+                }
+                
+                run_b = rle_val_b & mask_rle_b; 
+                acc_b += (run_b + 1); 
+                //printf("run_b:%u idx_a:%u idx_b:%u acc_a:%u acc_b:%u\n ", run_b, index_a, index_b, acc_a, acc_b);
+
+            }
+        } while (acc_a != acc_b);
+
+        //printf("idx_a:%u idx_b:%u acc_a:%u acc_b:%u A:%d B:%d c:%d\n ", index_a, index_b, acc_a, acc_b, ptr_nz_rle_a[index_a], ptr_nz_rle_b[index_b], c);
+
+        val1 = ptr_nz_rle_a[index_a/4];
+        index_a +=4;       
+
+        val2 = ptr_nz_rle_b[index_b/4];
+        index_b +=4;        
+        
+        c += val1 * val2;
+
+        if (index_a >= 4*rle_len_a)
+                return c;
+        if (index_b >= 4*rle_len_b)
+                return c;
+
+        if ((index_a % (4*n_rle_a)) == 0) {
+            rle_val_a = *(++ptr_idx_a);           
+        } else {
+            rle_val_a = rle_val_a >> b_rle_a;
+        }
+
+        run_a = rle_val_a & mask_rle_a; 
+        acc_a += (run_a + 1); 
+
+        //printf("run_a:%u   idx_a:%u idx_b:%u acc_a:%u acc_b:%u\n ", run_a, index_a, index_b, acc_a, acc_b);
+
+        if ((index_b % (4*n_rle_b)) == 0) {
+            rle_val_b = *(++ptr_idx_b);
+        } else {
+            rle_val_b = rle_val_b >> b_rle_b;
+        }
+
+        run_b = rle_val_b & mask_rle_b; 
+        acc_b += (run_b + 1);
+        //printf("run_b:%u idx_a:%u idx_b:%u acc_a:%u acc_b:%u\n ", run_b, index_a, index_b, acc_a, acc_b);
+    }
+    return c;
+}
+
+
 int32_t spVspV_bitmap() {
     int32_t c = 0;
     
 
     uint32_t idx = 0, idx2 = 0; 
-    uint32_t i=0, j=0, k=0, bit, bit_a, bit_b;
+    uint32_t i=0, j=0, k=4, bit, bit_a, bit_b;
     int32_t nz_val_a, nz_val_b; 
 
-
     uint32_t bitmap_val_a = ptr_bitmap_a[0]; 
-    uint32_t bitmap_val_b = ptr_bitmap_b[0]; 
-    uint32_t bitmap_val = bitmap_val_a & bitmap_val_b;
+    uint32_t bitmap_val_b = ptr_bitmap_b[0];
+
     uint32_t bit_mask = 1;
 
-    //while (i < nz_len*4 && j < nz_len*4) {
-        do {
+        while(1) {
+            if (bitmap_val_a & bit_mask) {
+                if (bitmap_val_b & bit_mask) {
 
-        	bit = bitmap_val & bit_mask;
-            if (bit){
-                c += ptr_nz_a[i/4] * ptr_nz_b[j/4];
-                //printf("i:%u j:%u c:%d\n", i/4, j/4, c);
+                    nz_val_a = ptr_nz_a[i/4];
+                    nz_val_b = ptr_nz_b[j/4];
+                    c += nz_val_a * nz_val_b;
+                    i+=4;
+                    j+=4;
+                    
+                    if (j==nz_len*4) 
+                        return c; 
+                    if (i==nz_len*4)
+                        return c; 
+
+                } else {
+
+                    i+=4;
+                    if (i==nz_len*4)
+                        return c; 
+                }
+                
+            } else if (bitmap_val_b & bit_mask) {
+                j+=4;
+                if (j==nz_len*4)
+                    return c; 
             }
-
-        	if (bitmap_val_a & bit_mask) 
-        		i+=4;
-        	if (bitmap_val_b & bit_mask)
-        		j+=4;
-
+     		 
         	bit_mask = bit_mask << 1;
-
-        	if (bit_mask==0) {
-        		k+=4; 
-        		bitmap_val_a = ptr_bitmap_a[k/4];
+            if (bit_mask==0) {
+            	bitmap_val_a = ptr_bitmap_a[k/4];
         		bitmap_val_b = ptr_bitmap_b[k/4];
-        		bitmap_val = bitmap_val_a & bitmap_val_b;
-        		bit_mask = 1;     	
-                //printf("bita:%x bitb:%x and-bits:%x\n",bitmap_val_a,bitmap_val_b,bitmap_val);
-        	}
-            //printf("bit:%u bitmask:%u\n",bit, bit_mask);
+                k+=4;
+        		bit_mask = 1;
+        	} 
         }
-        while ((i<nz_len*4) && (j < nz_len*4)); 
-        
-    //}
+            
     return c;
 }
 
@@ -287,6 +325,13 @@ int main()
     t2 = benchmark_get_cycle();
     snrt_cluster_hw_barrier();
     printf_("coordinate: %u res_act:%u\n",t2-t1,res_act);
+
+    snrt_cluster_hw_barrier();
+    t1 = benchmark_get_cycle();
+    res_act = spVspV_rle();
+    t2 = benchmark_get_cycle();
+    snrt_cluster_hw_barrier();
+    printf_("rle: %u res_act:%u\n",t2-t1,res_act);
 
 
     snrt_cluster_hw_barrier();

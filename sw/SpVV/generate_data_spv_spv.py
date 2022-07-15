@@ -3,19 +3,19 @@ from generate_data import *
 if __name__=='__main__':
 	f = open('data-spv-spv.h','w')
 	max_val = 4
-	vec_len = 64
-	sp = 0.9
+	vec_len = 2048
+	sp = 0.99
 	B = int(np.floor(np.log2(sp/(1-sp)))+1)
 	if B<1:
 		B=1
 
 	ds, a, vec_sparse_a = gen_sparse_vec(vec_len, sp, max_val)
-	(size, b_coo_a, _, _, nz_a, idx_list_a) = coo(vec_sparse_a, True) #(size, nz_a, idx_list_a) = coo(vec_sparse_a)
+	(size, b_coo_a, _, _, nz_a, idx_list_a) = coo(vec_sparse_a, False) #(size, nz_a, idx_list_a) = coo(vec_sparse_a)
 	(_, _, _, _, nz_rle_a, rle_a) = rle(vec_sparse_a, B)  #(_, nz_rle_a, rle_a) = rle(vec_sparse_a, B)
 	(_, _, bitmap_a) = bitmap(vec_sparse_a)               #(_, _, bitmap_a) = bitmap(vec_sparse_a)
 
 	ds, b, vec_sparse_b = gen_sparse_vec(vec_len, sp, max_val)
-	(size, b_coo_b, _, _, nz_b, idx_list_b) = coo(vec_sparse_b, True) #(size, nz_b, idx_list_b) = coo(vec_sparse_b)
+	(size, b_coo_b, _, _, nz_b, idx_list_b) = coo(vec_sparse_b, False) #(size, nz_b, idx_list_b) = coo(vec_sparse_b)
 	(_, _, _, _, nz_rle_b, rle_b) = rle(vec_sparse_b, B)  #(_, nz_rle_b, rle_b) = rle(vec_sparse_b, B)
 	(_, _, bitmap_b) = bitmap(vec_sparse_b)               #(_, _, bitmap_b) = bitmap(vec_sparse_b)
 

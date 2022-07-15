@@ -62,8 +62,8 @@ def packed_write_to_file(f, name, arr, b):
 if __name__=='__main__':
 	f = open('data-spvv.h','w')
 	max_val = 16
-	vec_len = 64
-	sp = 0.9
+	vec_len = 2048
+	sp = 0.99
 	B = int(np.floor(np.log2(sp/(1-sp)))+1)
 	if B<1:
 		B=1

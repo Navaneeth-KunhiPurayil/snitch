@@ -120,6 +120,8 @@ if __name__=='__main__':
         B = np.floor(np.log2(sp/(1-sp)))+1
         if B<1:
             B=1
+
+        print(sp, B)
         rs, b_rle, n_rle, len_rle, nz_list_rle, run_list_rle= rle(vec_sparse,B)
         rle_size.append(rs)
         
